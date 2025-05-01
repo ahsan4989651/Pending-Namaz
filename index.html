@@ -87,8 +87,6 @@
       background-color: var(--table-header-bg);
     }
     #darkModeToggle, #languageSelector {
-      position: fixed;
-      top: 10px;
       background: var(--button-bg);
       color: white;
       border: none;
@@ -97,11 +95,17 @@
       cursor: pointer;
       font-size: 14px;
     }
-    #darkModeToggle {
+    .header-buttons {
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      top: 10px;
+      left: 10px;
       right: 10px;
     }
-    #languageSelector {
-      left: 10px;
+    .header-buttons button, .header-buttons select {
+      font-size: 14px;
+      padding: 8px 15px;
     }
     @media (max-width: 480px) {
       h1 {
@@ -118,19 +122,28 @@
       .container {
         padding: 20px;
       }
+      .header-buttons {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .header-buttons button, .header-buttons select {
+        margin-bottom: 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="darkModeToggle">🌙 Dark Mode</button>
-  <select id="languageSelector">
-    <option value="en">English</option>
-    <option value="hi">हिन्दी</option>
-    <option value="ur">اردو</option>
-    <option value="bn">বাংলা</option>
-    <option value="roman-hi">Roman Hindi</option>
-    <option value="roman-ur">Roman Urdu</option>
-  </select>
+  <div class="header-buttons">
+    <button id="darkModeToggle">🌙 Dark Mode</button>
+    <select id="languageSelector">
+      <option value="en">English</option>
+      <option value="hi">हिन्दी</option>
+      <option value="ur">اردو</option>
+      <option value="bn">বাংলা</option>
+      <option value="roman-hi">Roman Hindi</option>
+      <option value="roman-ur">Roman Urdu</option>
+    </select>
+  </div>
 
   <div class="container">
     <h1 id="title">Qaza-e-Umri Calculator</h1>
