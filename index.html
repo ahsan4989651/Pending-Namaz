@@ -1,367 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Qaza-e-Umri Calculator</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Qaza Calculator</title>
   <style>
-    :root {
-      --bg-color: #ffffff;
-      --text-color: #333;
-      --button-bg: linear-gradient(to right, #2575fc, #6a11cb);
-      --table-header-bg: #f3f3f3;
-      --error-color: #e74c3c;
-    }
-    [data-theme="dark"] {
-      --bg-color: #121212;
-      --text-color: #ffffff;
-      --button-bg: linear-gradient(to right, #6a11cb, #2575fc);
-      --table-header-bg: #333;
-    }
+    /* Original UI Colors */
     body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       margin: 0;
-      padding: 20px;
-      box-sizing: border-box;
-      position: relative;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
     }
+
     .container {
-      background: var(--bg-color);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 800px;
-      text-align: center;
-      box-sizing: border-box;
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 20px;
     }
+
     h1 {
-      font-size: 28px;
-      margin-bottom: 20px;
-      color: var(--text-color);
+      text-align: center;
+      color: #4CAF50;
     }
-    .input-group {
-      margin: 15px 0;
-      text-align: left;
+
+    .form-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin: 30px 0;
+      justify-content: center;
     }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: 600;
-    }
-    input, button, select {
-      width: 100%;
-      padding: 12px;
-      margin: 5px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+
+    .form-group input {
+      padding: 10px;
       font-size: 16px;
-      box-sizing: border-box;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      background-color: white;
+      color: #333;
     }
-    input:focus {
-      outline: none;
-      border-color: #2575fc;
-    }
+
     button {
-      background: var(--button-bg);
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
       color: white;
       border: none;
+      border-radius: 4px;
       cursor: pointer;
-      font-weight: bold;
-      transition: transform 0.2s;
     }
-    button:hover {
-      transform: translateY(-2px);
-    }
-    .error {
-      color: var(--error-color);
-      font-size: 14px;
-      margin-top: 5px;
-    }
+
     table {
       width: 100%;
-      margin: 20px 0;
       border-collapse: collapse;
+      margin: 20px 0;
+      background-color: white;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 12px;
-      font-size: 14px;
       text-align: center;
     }
+
     th {
-      background-color: var(--table-header-bg);
+      background-color: #4CAF50;
+      color: white;
     }
-    .header-buttons {
-      display: flex;
-      justify-content: space-between;
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      right: 20px;
+
+    tr:nth-child(even) {
+      background-color: #f8f8f8;
     }
-    #darkModeToggle, #languageSelector {
-      background: var(--button-bg);
+
+    .download-btn {
+      background-color: #4CAF50;
       color: white;
       border: none;
-      border-radius: 8px;
       padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 14px;
+      margin-top: 20px;
     }
-    @media (max-width: 480px) {
-      h1 { font-size: 22px; }
-      input, button { font-size: 14px; padding: 10px; }
-      th, td { font-size: 12px; padding: 8px; }
-      .container { padding: 20px; }
-      .header-buttons { flex-direction: column; align-items: flex-start; }
-      .header-buttons button, .header-buttons select { margin-bottom: 10px; }
+
+    .error {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .note {
+      margin-top: 15px;
+      color: #555;
+    }
+
+    /* Dark Mode (Preserving Original UI Structure) */
+    [data-theme="dark"] body {
+      background-color: #1e1e1e;
+      color: #f0f0f0;
+    }
+
+    [data-theme="dark"] .form-group input,
+    [data-theme="dark"] table {
+      background-color: #2d2d2d;
+      color: #f0f0f0;
+    }
+
+    [data-theme="dark"] th {
+      background-color: #81c784;
+    }
+
+    [data-theme="dark"] tr:nth-child(even) {
+      background-color: #3a3a3a;
+    }
+
+    [data-theme="dark"] .error {
+      color: #ef5350;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 20px;
+      background: #666;
+      border-radius: 30px;
+      padding: 4px;
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .theme-toggle::before {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: white;
+      border-radius: 50%;
+      left: 4px;
+      top: 4px;
+      transition: transform 0.3s;
+    }
+
+    [data-theme="dark"] .theme-toggle {
+      background: #bbb;
+    }
+
+    [data-theme="dark"] .theme-toggle::before {
+      background: #1e1e1e;
+      transform: translateX(18px);
     }
   </style>
 </head>
-<body>
-  <div class="header-buttons">
-    <button id="darkModeToggle">🌙 Dark Mode</button>
-    <select id="languageSelector">
-      <option value="en">English</option>
-      <option value="hi">हिन्दी</option>
-      <option value="ur">اردو</option>
-      <option value="bn">বাংলা</option>
-      <option value="roman-hi">Roman Hindi</option>
-      <option value="roman-ur">Roman Urdu</option>
-    </select>
-  </div>
-
+<body data-theme="light">
+  <div class="theme-toggle" onclick="toggleTheme()"></div>
+  
   <div class="container">
-    <h1 id="title">Qaza-e-Umri Calculator</h1>
-    <div class="input-group">
-      <label id="birthLabel" for="birthDate">Your Birth Date:</label>
-      <input type="date" id="birthDate" required />
-      <div id="birthError" class="error"></div>
+    <h1>Qaza Prayer Calculator</h1>
+    
+    <div class="form-group">
+      <label>
+        Puberty Date:
+        <input type="date" id="pubertyDate">
+      </label>
+      <label>
+        Regular Prayer Date:
+        <input type="date" id="regularDate">
+      </label>
+      <button id="calculateBtn">Calculate</button>
     </div>
-    <div class="input-group">
-      <label id="pubertyLabel" for="pubertyDate">Date you reached puberty:</label>
-      <input type="date" id="pubertyDate" required />
-      <div id="pubertyError" class="error"></div>
-    </div>
-    <div class="input-group">
-      <label id="regularLabel" for="regularDate">Date you started praying regularly:</label>
-      <input type="date" id="regularDate" required />
-      <div id="regularError" class="error"></div>
-    </div>
-    <button id="calculateBtn">Calculate Qaza</button>
+    
     <div id="result"></div>
   </div>
 
   <script>
-    const languageData = {
-      en: {
-        title: "Qaza-e-Umri Calculator",
-        birthLabel: "Your Birth Date:",
-        pubertyLabel: "Date you reached puberty:",
-        regularLabel: "Date you started praying regularly:",
-        calculateBtn: "Calculate Qaza",
-        totalMissedDays: "Total Missed Days",
-        totalNamaz: "Total Namaz",
-        totalFard: "Total Fard Rakat",
-        totalWitr: "Total Witr Rakat",
-        ageAtPuberty: "Age at Puberty",
-        summary: "Summary",
-        downloadPdf: "Download PDF",
-        errorInvalidDates: "Please enter valid dates.",
-        errorFutureDate: "Dates cannot be in the future.",
-        errorPubertyBeforeBirth: "Puberty date must be after birth date.",
-        errorRegularBeforePuberty: "Regular prayer date must be after puberty date."
-      },
-      hi: {
-        title: "क़ज़ा-ए-उमरी कैलकुलेटर",
-        birthLabel: "आपकी जन्मतिथि:",
-        pubertyLabel: "आपने प्यूबर्टी कब प्राप्त की:",
-        regularLabel: "नियमित नमाज़ शुरू करने की तिथि:",
-        calculateBtn: "क़ज़ा की गणना करें",
-        totalMissedDays: "कुल छूटे दिन",
-        totalNamaz: "कुल नमाज़",
-        totalFard: "कुल फ़र्ज़ रकात",
-        totalWitr: "कुल वित्र रकात",
-        ageAtPuberty: "प्यूबर्टी की आयु",
-        summary: "सारांश",
-        downloadPdf: "पीडीएफ डाउनलोड करें",
-        errorInvalidDates: "कृपया वैध तिथियाँ दर्ज करें।",
-        errorFutureDate: "तिथियाँ भविष्य की नहीं हो सकतीं।",
-        errorPubertyBeforeBirth: "प्यूबर्टी की तिथि जन्म तिथि के बाद होनी चाहिए।",
-        errorRegularBeforePuberty: "नियमित नमाज़ की तिथि प्यूबर्टी के बाद होनी चाहिए।"
-      },
-      // Add other languages as needed
-    };
-
-    let currentLanguage = localStorage.getItem('language') || 'en';
-    updateLanguage(currentLanguage);
-
-    document.getElementById('languageSelector').addEventListener('change', (e) => {
-      currentLanguage = e.target.value;
-      localStorage.setItem('language', currentLanguage);
-      updateLanguage(currentLanguage);
-    });
-
-    function updateLanguage(lang) {
-      console.log('Updating language to:', lang);
-      const data = languageData[lang] || languageData.en;
-      document.getElementById('title').textContent = data.title;
-      document.getElementById('birthLabel').textContent = data.birthLabel;
-      document.getElementById('pubertyLabel').textContent = data.pubertyLabel;
-      document.getElementById('regularLabel').textContent = data.regularLabel;
-      document.getElementById('calculateBtn').textContent = data.calculateBtn;
+    // Theme toggle functionality
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
     }
 
-    document.getElementById('darkModeToggle').addEventListener('click', () => {
-      document.documentElement.toggleAttribute('data-theme', 'dark');
-      document.getElementById('darkModeToggle').textContent = 
-        document.documentElement.hasAttribute('data-theme') ? '☀️ Light Mode' : '🌙 Dark Mode';
+    // Initialize theme
+    document.addEventListener('DOMContentLoaded', function() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
     });
 
-    document.getElementById('calculateBtn').addEventListener('click', calculateQaza);
+    // Main calculator
+    window.onload = function () {
+      document.getElementById('calculateBtn').addEventListener('click', function () {
+        const pubertyDate = new Date(document.getElementById('pubertyDate').value);
+        const regularDate = new Date(document.getElementById('regularDate').value);
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = "";
 
-    function calculateQaza() {
-      console.log('Calculating Qaza...');
-      const birthDate = new Date(document.getElementById('birthDate').value);
-      const pubertyDate = new Date(document.getElementById('pubertyDate').value);
-      const regularDate = new Date(document.getElementById('regularDate').value);
-      const resultDiv = document.getElementById('result');
-      const today = new Date();
+        // Validate dates
+        if (isNaN(pubertyDate.getTime()) || isNaN(regularDate.getTime()) || regularDate <= pubertyDate) {
+          resultDiv.innerHTML = "<p class='error'>Please enter valid dates where Regular Prayer Date is after Puberty Date.</p>";
+          return;
+        }
 
-      // Reset errors
-      document.getElementById('birthError').textContent = '';
-      document.getElementById('pubertyError').textContent = '';
-      document.getElementById('regularError').textContent = '';
-      resultDiv.innerHTML = '';
+        // Calculate date differences
+        const timeDiff = regularDate - pubertyDate;
+        const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const totalNamaz = totalDays * 5;
 
-      // Validation
-      if (!birthDate.getTime() || !pubertyDate.getTime() || !regularDate.getTime()) {
-        resultDiv.innerHTML = `<p class="error">${languageData[currentLanguage].errorInvalidDates}</p>`;
-        console.error('Invalid date input');
-        return;
-      }
+        // Prayer data with Fard and Witr counts
+        const salah = [
+          { name: "Fajr", fard: 2, witr: 0 },
+          { name: "Zuhr", fard: 4, witr: 0 },
+          { name: "Asr",  fard: 4, witr: 0 },
+          { name: "Maghrib", fard: 3, witr: 0 },
+          { name: "Isha", fard: 4, witr: 3 }
+        ];
 
-      if (birthDate > today || pubertyDate > today || regularDate > today) {
-        resultDiv.innerHTML = `<p class="error">${languageData[currentLanguage].errorFutureDate}</p>`;
-        console.error('Future date detected');
-        return;
-      }
+        // Initialize totals
+        let totalRakat = 0;
+        let totalFarz = 0;
+        let totalWitr = 0;
+        let csvData = "Prayer,Missed,Fard,Witr,Total Rakat\n";
 
-      if (pubertyDate <= birthDate) {
-        document.getElementById('pubertyError').textContent = languageData[currentLanguage].errorPubertyBeforeBirth;
-        console.error('Puberty date before birth');
-        return;
-      }
+        // Build table HTML
+        let tableHTML = `
+          <table>
+            <tr>
+              <th>Prayer</th>
+              <th>Missed</th>
+              <th>Fard</th>
+              <th>Witr</th>
+              <th>Total Rakat</th>
+              <th>Completed</th>
+            </tr>`;
 
-      if (regularDate <= pubertyDate) {
-        document.getElementById('regularError').textContent = languageData[currentLanguage].errorRegularBeforePuberty;
-        console.error('Regular date before puberty');
-        return;
-      }
+        // Generate rows for each prayer
+        salah.forEach((prayer, index) => {
+          const fardTotal = prayer.fard * totalDays;
+          const witrTotal = prayer.witr * totalDays;
+          const totalPrayerRakat = fardTotal + witrTotal;
+          
+          // Update totals
+          totalRakat += totalPrayerRakat;
+          totalFarz += fardTotal;
+          totalWitr += witrTotal;
 
-      // Calculations
-      console.log('Dates valid, calculating...');
-      const ageAtPuberty = Math.floor((pubertyDate - birthDate) / (1000 * 60 * 60 * 24 * 365.25));
-      const totalDays = Math.floor((regularDate - pubertyDate) / (1000 * 60 * 60 * 24));
+          // Add prayer row to CSV
+          csvData += `${prayer.name},${totalDays},${fardTotal},${witrTotal},${totalPrayerRakat}\n`;
 
-      const salah = [
-        { name: "Fajr", fard: 2, witr: 0 },
-        { name: "Zuhr", fard: 4, witr: 0 },
-        { name: "Asr", fard: 4, witr: 0 },
-        { name: "Maghrib", fard: 3, witr: 0 },
-        { name: "Isha", fard: 4, witr: 3 }
-      ];
+          // Add checkbox state persistence
+          const checked = localStorage.getItem(`prayer_${index}`) === "true" ? "checked" : "";
 
-      let totalFard = 0;
-      let totalWitr = 0;
-      const totalNamaz = totalDays * 5;
+          // Add prayer row to table
+          tableHTML += `
+            <tr>
+              <td>${prayer.name}</td>
+              <td>${totalDays}</td>
+              <td>${fardTotal}</td>
+              <td>${witrTotal}</td>
+              <td>${totalPrayerRakat}</td>
+              <td>
+                <input type="checkbox" id="check_${index}" ${checked} onchange="localStorage.setItem('prayer_${index}', this.checked)">
+              </td>
+            </tr>`;
+        });
 
-      const prayerBreakdown = salah.map(prayer => {
-        const missedFard = prayer.fard * totalDays;
-        const missedWitr = prayer.witr * totalDays;
-        totalFard += missedFard;
-        totalWitr += missedWitr;
-        return {
-          name: prayer.name,
-          fard: missedFard,
-          witr: missedWitr,
-          total: missedFard + missedWitr
-        };
-      });
-
-      console.log('Prayer breakdown:', prayerBreakdown);
-
-      // Generate HTML
-      let html = `
-        <h3>${languageData[currentLanguage].summary}</h3>
-        <p>${languageData[currentLanguage].ageAtPuberty}: <strong>${ageAtPuberty}</strong></p>
-        <table>
+        // Add totals row to table
+        tableHTML += `
           <tr>
-            <th>Prayer</th>
-            <th>Fard Rakat</th>
-            <th>Witr Rakat</th>
-            <th>Total Rakat</th>
+            <td><strong>Total</strong></td>
+            <td>${totalNamaz}</td>
+            <td>${totalFarz}</td>
+            <td>${totalWitr}</td>
+            <td>${totalFarz + totalWitr}</td>
+            <td></td>
           </tr>`;
 
-      prayerBreakdown.forEach(prayer => {
-        html += `
+        // Add grand total row
+        tableHTML += `
           <tr>
-            <td>${prayer.name}</td>
-            <td>${prayer.fard}</td>
-            <td>${prayer.witr}</td>
-            <td>${prayer.total}</td>
-          </tr>`;
+            <th colspan="4">Grand Total (Rakats)</th>
+            <th>${totalRakat.toLocaleString()}</th>
+            <td></td>
+          </tr>
+          </table>`;
+
+        // Add CSV totals row
+        csvData += `\nTotal,${totalNamaz},${totalFarz},${totalWitr},${totalRakat}\n`;
+
+        // Update result div with final content
+        resultDiv.innerHTML = `
+          ${tableHTML}
+          <button onclick="downloadCSV()" class="download-btn">📥 Download CSV</button>
+          <p class="note"><small>* Only Fard and Witr are included. Sunnah are optional in Qaza.</small></p>
+        `;
+
+        // Store CSV in global for download
+        window.qazaCSV = csvData;
       });
 
-      html += `
-        <tr>
-          <th>Total</th>
-          <th>${totalFard}</th>
-          <th>${totalWitr}</th>
-          <th>${totalFard + totalWitr}</th>
-        </tr>
-        </table>
-        <h4>Summary Statistics</h4>
-        <table>
-          <tr><th>${languageData[currentLanguage].totalMissedDays}</th><td>${totalDays}</td></tr>
-          <tr><th>${languageData[currentLanguage].totalNamaz}</th><td>${totalNamaz}</td></tr>
-          <tr><th>${languageData[currentLanguage].totalFard}</th><td>${totalFard}</td></tr>
-          <tr><th>${languageData[currentLanguage].totalWitr}</th><td>${totalWitr}</td></tr>
-        </table>
-        <br>
-        <button onclick="downloadPDF()">${languageData[currentLanguage].downloadPdf}</button>`;
-
-      resultDiv.innerHTML = html;
-      console.log('Result displayed');
-    }
-
-    function downloadPDF() {
-      console.log('Generating PDF...');
-      const element = document.getElementById("result");
-      if (!element.innerHTML) {
-        console.error('No result content to generate PDF');
-        return;
-      }
-      const options = {
-        filename: 'qaza-e-umri.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      // CSV download functionality
+      window.downloadCSV = function () {
+        const blob = new Blob([window.qazaCSV], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "qaza_report.csv";
+        a.click();
+        URL.revokeObjectURL(url);
       };
-      html2pdf().from(element).set(options).save().then(() => {
-        console.log('PDF generated successfully');
-      }).catch(err => {
-        console.error('PDF generation failed:', err);
-      });
-    }
+    };
   </script>
 </body>
 </html>
