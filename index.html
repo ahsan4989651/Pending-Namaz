@@ -28,6 +28,7 @@
       min-height: 100vh;
       margin: 0;
       padding: 20px;
+      box-sizing: border-box;
     }
     .container {
       background: var(--bg-color);
@@ -268,74 +269,26 @@
         const salah = [
           { name: "Fajr", fard: 2, witr: 0 },
           { name: "Zuhr", fard: 4, witr: 0 },
-          { name: "Asr",  fard: 4, witr: 0 },
+          { name: "Asr", fard: 4, witr: 0 },
           { name: "Maghrib", fard: 3, witr: 0 },
-          { name: "Isha", fard: 4, witr: 3 }
+          { name: "Isha", fard: 4, witr: 1 }
         ];
-
-        let totalRakat = 0;
-        let totalFard = 0;
-        let totalWitr = 0;
-        let tableHTML = `
-          <table>
-            <tr>
-              <th>Prayer</th>
-              <th>Missed Days</th>
-              <th>Fard</th>
-              <th>Witr</th>
-              <th>Total Rakat</th>
-            </tr>`;
-
-        salah.forEach((prayer) => {
-          const fardTotal = prayer.fard * totalDays;
-          const witrTotal = prayer.witr * totalDays;
-          const totalPrayerRakat = fardTotal + witrTotal;
-          totalRakat += totalPrayerRakat;
-          totalFard += fardTotal;
-          totalWitr += witrTotal;
-
-          tableHTML += `
-            <tr>
-              <td>${prayer.name}</td>
-              <td>${totalDays}</td>
-              <td>${fardTotal}</td>
-              <td>${witrTotal}</td>
-              <td>${totalPrayerRakat}</td>
-            </tr>`;
-        });
-
-        tableHTML += `
-          <tr style="background-color: var(--table-header-bg);">
-            <th colspan="2">Summary</th>
-            <td><strong>${totalFard}</strong></td>
-            <td><strong>${totalWitr}</strong></td>
-            <td><strong>${totalRakat}</strong></td>
-          </tr>
-        </table>`;
+        
+        let missedNamaz = totalNamaz;
 
         resultDiv.innerHTML = `
-          <div>
-            <p><strong>${languageData[currentLanguage].totalMissedDays}:</strong> ${totalDays}</p>
-            <p><strong>${languageData[currentLanguage].totalMissedNamaz}:</strong> ${totalNamaz.toLocaleString()}</p>
-            <p><strong>${languageData[currentLanguage].ageAtPuberty}:</strong> ${ageAtPuberty} years</p>
-            ${tableHTML}
-            <button onclick="downloadPDF()" style="margin-top:10px;">${languageData[currentLanguage].downloadPdf}</button>
-          </div>
+          <p><strong>${languageData[currentLanguage].ageAtPuberty}</strong> ${ageAtPuberty} years old.</p>
+          <p><strong>${languageData[currentLanguage].totalMissedDays}</strong> ${totalDays} days.</p>
+          <p><strong>${languageData[currentLanguage].totalMissedNamaz}</strong> ${missedNamaz} Rakats missed.</p>
+          <button onclick="generatePDF()">${languageData[currentLanguage].downloadPdf}</button>
         `;
       });
-
-      window.downloadPDF = function () {
-        const element = document.querySelector('.container');
-        const opt = {
-          margin: 0.5,
-          filename: 'qaza_report.pdf',
-          image: { type: 'jpeg', quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(element).save();
-      };
     };
+
+    function generatePDF() {
+      const element = document.querySelector('.container');
+      html2pdf().from(element).save('Qaza-e-Umri-Report.pdf');
+    }
   </script>
 </body>
 </html>
