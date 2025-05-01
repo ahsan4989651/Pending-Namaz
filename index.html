@@ -1,23 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Qaza-e-Umri Calculator</title>
   <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #333333;
+      --input-bg: #ffffff;
+      --border-color: #cccccc;
+      --primary-gradient: linear-gradient(to right, #2575fc, #6a11cb);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #1a1a1a;
+      --text-color: #ffffff;
+      --input-bg: #222222;
+      --border-color: #444444;
+      --primary-gradient: linear-gradient(to right, #0f2027, #203a43);
+    }
+
     body {
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+      background: var(--bg-color);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       margin: 0;
       padding: 20px;
+      color: var(--text-color);
+      transition: background 0.3s;
     }
 
     .container {
-      background: white;
+      background: var(--bg-color);
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
@@ -26,6 +44,25 @@
       text-align: center;
       box-sizing: border-box;
       position: relative;
+      transition: background 0.3s;
+    }
+
+    .language-controls {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      display: flex;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    #languageSelector, #scriptToggle {
+      padding: 5px 10px;
+      border-radius: 5px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--text-color);
+      cursor: pointer;
     }
 
     .theme-toggle {
@@ -63,39 +100,29 @@
       transform: translateX(18px);
     }
 
-    h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
-      color: #333;
-    }
-
-    label {
-      display: block;
-      margin-top: 10px;
-      text-align: left;
-      font-weight: 600;
+    .rtl {
+      direction: rtl;
+      text-align: right !important;
     }
 
     input, button {
       width: 100%;
       padding: 12px;
       margin: 10px 0;
-      border: 1px solid #ccc;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       font-size: 16px;
       box-sizing: border-box;
+      background: var(--input-bg);
+      color: var(--text-color);
     }
 
     button {
-      background: linear-gradient(to right, #2575fc, #6a11cb);
+      background: var(--primary-gradient);
       color: white;
       border: none;
       cursor: pointer;
       font-weight: bold;
-    }
-
-    button:hover {
-      background: linear-gradient(to right, #6a11cb, #2575fc);
     }
 
     table {
@@ -105,19 +132,13 @@
     }
 
     th, td {
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-color);
       padding: 10px;
       font-size: 14px;
     }
 
     th {
-      background-color: #f3f3f3;
-    }
-
-    #result {
-      margin-top: 30px;
-      text-align: left;
-      overflow-x: auto;
+      background-color: rgba(0,0,0,0.1);
     }
 
     .error {
@@ -125,203 +146,293 @@
       font-weight: bold;
     }
 
-    @media (max-width: 480px) {
-      h1 {
-        font-size: 20px;
-      }
-
-      input, button {
-        font-size: 14px;
-        padding: 10px;
-      }
-
-      th, td {
-        font-size: 12px;
-        padding: 8px;
-      }
-
-      .container {
-        padding: 20px;
-      }
+    .note {
+      margin-top: 15px;
+      font-size: 0.9em;
+      color: var(--text-color);
+      opacity: 0.8;
     }
 
-    /* Dark Mode Overrides */
-    [data-theme="dark"] body {
-      background: #000;
-      color: #fff;
+    .motivation {
+      font-style: italic;
+      font-weight: bold;
+      margin: 20px 0;
+      padding: 15px;
+      border-left: 4px solid #6a11cb;
+      background: rgba(106,17,203,0.1);
+      text-align: left;
     }
 
-    [data-theme="dark"] .container {
-      background: #1a1a1a;
-      box-shadow: 0 10px 25px rgba(255, 255, 255, 0.05);
+    [data-theme="dark"] .motivation {
+      border-color: #8ec5fc;
+      background: rgba(142,197,252,0.1);
     }
 
-    [data-theme="dark"] h1,
-    [data-theme="dark"] label {
-      color: #fff;
-    }
-
-    [data-theme="dark"] input,
-    [data-theme="dark"] button,
-    [data-theme="dark"] th,
-    [data-theme="dark"] td {
-      background: #222;
-      color: #fff;
-      border-color: #444;
-    }
-
-    [data-theme="dark"] th {
-      background-color: #333;
-    }
-
-    [data-theme="dark"] tr:nth-child(even) {
-      background-color: #2a2a2a;
-    }
-
-    [data-theme="dark"] button {
-      background: linear-gradient(to right, #0f2027, #203a43);
-    }
-
-    [data-theme="dark"] button:hover {
-      background: linear-gradient(to right, #203a43, #0f2027);
-    }
-
-    [data-theme="dark"] .error {
-      color: #ef5350;
+    .emoji {
+      font-style: normal;
     }
   </style>
 </head>
 <body data-theme="light">
+  <div class="language-controls">
+    <select id="languageSelector">
+      <option value="en">English</option>
+      <option value="ur">Urdu</option>
+      <option value="hi">Hindi</option>
+      <option value="bn">Bangla</option>
+    </select>
+    <button id="scriptToggle" style="display: none;">Roman</button>
+  </div>
+  
   <div class="theme-toggle" onclick="toggleTheme()"></div>
   
   <div class="container">
-    <h1>Qaza-e-Umri Calculator</h1>
+    <h1 data-i18n="title"></h1>
+    <div id="motivation"></div>
     
-    <!-- Date of Birth with Example -->
-    <label for="birthDate">Date of Birth:</label>
+    <label for="birthDate" data-i18n="birthDate"></label>
     <input type="date" id="birthDate" value="1995-01-01" />
     
-    <label for="pubertyDate">Date you reached puberty:</label>
+    <label for="pubertyDate" data-i18n="pubertyDate"></label>
     <input type="date" id="pubertyDate" value="2010-01-01" />
     
-    <label for="regularDate">Date you started praying regularly:</label>
+    <label for="regularDate" data-i18n="regularDate"></label>
     <input type="date" id="regularDate" value="2020-01-01" />
     
-    <button id="calculateBtn">Calculate Qaza</button>
+    <button id="calculateBtn" data-i18n="calculateBtn"></button>
     
     <div id="result"></div>
   </div>
 
   <script>
+    const translations = {
+      en: {
+        native: {
+          title: "🌙 Qaza-e-Umri Calculator",
+          birthDate: "Date of Birth:",
+          pubertyDate: "Date of reaching puberty:",
+          regularDate: "Date of regular prayer:",
+          calculateBtn: "Calculate Qaza",
+          errorDates: "Dates must follow: Birth < Puberty < Regular Prayer",
+          totalMissed: "Total Missed Days:",
+          downloadCSV: "📥 Download CSV",
+          noteSunnah: "* Only Fard and Witr are included. Sunnah are optional in Qaza.",
+          motivation: "🌟 Every prayer brings you closer to peace and purpose. Start today! Even one consistent prayer is a victory! 🙏❤️",
+          columns: ["Prayer", "Days", "Fard", "Witr", "Total"],
+          prayers: ["Fajr", "Zuhr", "Asr", "Maghrib", "Isha"]
+        }
+      },
+      ur: {
+        native: {
+          title: "🌙 قضا عمری کیلکولیٹر",
+          birthDate: "تاریخ پیدائش:",
+          pubertyDate: "سن بلوغت کی تاریخ:",
+          regularDate: "نماز باقاعدہ شروع کرنے کی تاریخ:",
+          calculateBtn: "قضا کا حساب لگائیں",
+          errorDates: "تاریخوں کا تسلسل: پیدائش < بلوغت < باقاعدہ نماز",
+          totalMissed: "کل چھوٹے ہوئے دن:",
+          downloadCSV: "📥 ڈاؤنلوڈ CSV",
+          noteSunnah: "* فقط فرض اور وتر شامل ہیں۔ سنتیں قضا میں اختیاری ہیں۔",
+          motivation: "🌟 ہر نماز آپ کو سکون اور مقصد کے قریب لے جاتی ہے۔ آج سے شروع کریں! مسلسل ایک نماز بھی کامیابی ہے! 🙏❤️",
+          columns: ["نماز", "دن", "فرض", "وتر", "کل"],
+          prayers: ["فجر", "ظہر", "عصر", "مغرب", "عشاء"]
+        },
+        roman: {
+          title: "🌙 Qaza-e-Umri Calculator",
+          birthDate: "Tareekh-e-Pedaisih:",
+          pubertyDate: "Sin-e-Bulogh ki tareekh:",
+          regularDate: "Namaz baqaida shuru karne ki tareekh:",
+          calculateBtn: "Qaza ka Hisab Lagaein",
+          errorDates: "Tareekhon ka tasalsul: Pedaish < Bulogh < Baqaida Namaz",
+          totalMissed: "Kul Chhoote Hue Din:",
+          downloadCSV: "📥 Download CSV",
+          noteSunnah: "* Sirf Farz aur Witr shaamil hain. Sunnat Qaza mein ikhtiyari hain.",
+          motivation: "🌟 Har namaz aap ko sukoon aur maqsad ke qareeb le jati hai. Aaj se shuru karein! Musalsal ek namaz bhi kamiyabi hai! 🙏❤️",
+          columns: ["Namaz", "Din", "Farz", "Witr", "Kul"],
+          prayers: ["Fajr", "Zohar", "Asr", "Maghrib", "Isha"]
+        }
+      },
+      hi: {
+        native: {
+          title: "🌙 क़ज़ा-ए-उम्र कैलकुलेटर",
+          birthDate: "जन्म तिथि:",
+          pubertyDate: "यौवनारंभ की तिथि:",
+          regularDate: "नियमित नमाज़ शुरू करने की तिथि:",
+          calculateBtn: "क़ज़ा गणना करें",
+          errorDates: "तिथियों का क्रम: जन्म < यौवन < नियमित नमाज़",
+          totalMissed: "कुल छूटे दिन:",
+          downloadCSV: "📥 CSV डाउनलोड करें",
+          noteSunnah: "* केवल फर्ज़ और वित्र शामिल हैं। सुन्नत क़ज़ा में वैकल्पिक हैं।",
+          motivation: "🌟 हर नमाज़ आपको शांति और उद्देश्य के करीब लाती है। आज से शुरू करें! लगातार एक नमाज़ भी जीत है! 🙏❤️",
+          columns: ["नमाज़", "दिन", "फर्ज़", "वित्र", "कुल"],
+          prayers: ["फज्र", "ज़ुहर", "अस्र", "मग़रिब", "इशा"]
+        },
+        roman: {
+          title: "🌙 Qaza-e-Umri Calculator",
+          birthDate: "Janam Tithi:",
+          pubertyDate: "Yauvanarambh ki Tithi:",
+          regularDate: "Niyamit Namaz Shuru Karne ki Tithi:",
+          calculateBtn: "Qaza Gannana Karen",
+          errorDates: "Tithiyon ka Kram: Janam < Yauvan < Niyamit Namaz",
+          totalMissed: "Kul Chhoote Din:",
+          downloadCSV: "📥 Download CSV",
+          noteSunnah: "* Kewal Farz aur Vitr Shaamil Hain. Sunnat Qaza Mein Vaikalpik Hain.",
+          motivation: "🌟 Har Namaz aapko shaanti aur uddeshy ke kareeb laati hai. Aaj se shuru karen! Lagatar ek Namaz bhi jeet hai! 🙏❤️",
+          columns: ["Namaz", "Din", "Farz", "Vitr", "Kul"],
+          prayers: ["Fajr", "Zuhr", "Asr", "Maghrib", "Isha"]
+        }
+      },
+      bn: {
+        native: {
+          title: "🌙 ক্বাযা-এ-উমরি ক্যালকুলেটর",
+          birthDate: "জন্ম তারিখ:",
+          pubertyDate: "বালেগ হওয়ার তারিখ:",
+          regularDate: "নিয়মিত নামাজ শুরু করার তারিখ:",
+          calculateBtn: "ক্বাযা গণনা করুন",
+          errorDates: "তারিখের ক্রম: জন্ম < বালেগ < নিয়মিত নামাজ",
+          totalMissed: "মোট ছুটে যাওয়া দিন:",
+          downloadCSV: "📥 CSV ডাউনলোড করুন",
+          noteSunnah: "* শুধুমাত্র ফরয এবং বিতর অন্তর্ভুক্ত। সুন্নাত ক্বাযায় ঐচ্ছিক।",
+          motivation: "🌟 প্রতিটি নামাজ আপনাকে শান্তি ও লক্ষ্যের কাছাকাছি নিয়ে যায়। আজ থেকে শুরু করুন! ধারাবাহিকভাবে একটি নামাজও বিজয়! 🙏❤️",
+          columns: ["নামাজ", "দিন", "ফরয", "বিতর", "মোট"],
+          prayers: ["ফজর", "জোহর", "আসর", "মাগরিব", "ইশা"]
+        },
+        roman: {
+          title: "🌙 Qaza-e-Umri Calculator",
+          birthDate: "Jonmo Tarikh:",
+          pubertyDate: "Baleg Howar Tarikh:",
+          regularDate: "Niyomito Namaz Shuru Korar Tarikh:",
+          calculateBtn: "Qaza Gonona Koren",
+          errorDates: "Tarikher Krom: Jonmo < Baleg < Niyomito Namaz",
+          totalMissed: "Mot Chute Jawa Din:",
+          downloadCSV: "📥 Download CSV",
+          noteSunnah: "* Shudhumatro Forj o Bitor Ontorbhukto. Sunnat Qazay Oichochik.",
+          motivation: "🌟 Protiti Namaz apnake shanti o lokkher kachakachi niye jay. Aj theke shuru korun! Dharabahikbhabe akti Namaz o bijoy! 🙏❤️",
+          columns: ["Namaz", "Din", "Forj", "Bitor", "Mot"],
+          prayers: ["Fajr", "Johor", "Asr", "Maghrib", "Isha"]
+        }
+      }
+    };
+
+    let currentLang = 'en';
+    let currentScript = 'native';
+    
+    function updateTranslations() {
+      const langData = translations[currentLang][currentScript];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        el.textContent = langData[key];
+      });
+      document.getElementById('motivation').innerHTML = `
+        <div class="motivation">${langData.motivation}</div>
+      `;
+      document.body.classList.toggle('rtl', currentLang === 'ur');
+      document.getElementById('scriptToggle').style.display = 
+        translations[currentLang].roman ? 'block' : 'none';
+    }
+
     function toggleTheme() {
-      const currentTheme = document.documentElement.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      const newTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-      const savedTheme = localStorage.getItem('theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-    });
+    function calculateQaza() {
+      const langData = translations[currentLang][currentScript];
+      const birthDate = new Date(document.getElementById('birthDate').value);
+      const pubertyDate = new Date(document.getElementById('pubertyDate').value);
+      const regularDate = new Date(document.getElementById('regularDate').value);
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '';
 
-    window.onload = function () {
-      document.getElementById('calculateBtn').addEventListener('click', function () {
-        const birthDate = new Date(document.getElementById('birthDate').value);
-        const pubertyDate = new Date(document.getElementById('pubertyDate').value);
-        const regularDate = new Date(document.getElementById('regularDate').value);
-        const resultDiv = document.getElementById('result');
-        resultDiv.innerHTML = "";
+      if (isNaN(birthDate) || isNaN(pubertyDate) || isNaN(regularDate)) {
+        resultDiv.innerHTML = `<p class="error">${langData.errorDates}</p>`;
+        return;
+      }
 
-        if (isNaN(birthDate.getTime()) || isNaN(pubertyDate.getTime()) || isNaN(regularDate.getTime())) {
-          resultDiv.innerHTML = "<p class='error'>Please enter all dates.</p>";
-          return;
-        }
+      if (pubertyDate <= birthDate || regularDate <= pubertyDate) {
+        resultDiv.innerHTML = `<p class="error">${langData.errorDates}</p>`;
+        return;
+      }
 
-        if (pubertyDate <= birthDate || regularDate <= pubertyDate) {
-          resultDiv.innerHTML = "<p class='error'>Dates must follow: Birth < Puberty < Regular Prayer.</p>";
-          return;
-        }
+      const timeDiff = regularDate - pubertyDate;
+      const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      
+      const salah = [
+        { fard: 2, witr: 0 },
+        { fard: 4, witr: 0 },
+        { fard: 4, witr: 0 },
+        { fard: 3, witr: 0 },
+        { fard: 4, witr: 3 }
+      ];
 
-        const timeDiff = regularDate - pubertyDate;
-        const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-        const totalNamaz = totalDays * 5;
+      let tableHTML = `<table><tr>${langData.columns.map(c => `<th>${c}</th>`).join('')}</tr>`;
+      let csvData = `${langData.columns.join(',')}\n`;
+      let totalRakat = 0;
 
-        const salah = [
-          { name: "Fajr", fard: 2, witr: 0 },
-          { name: "Zuhr", fard: 4, witr: 0 },
-          { name: "Asr", fard: 4, witr: 0 },
-          { name: "Maghrib", fard: 3, witr: 0 },
-          { name: "Isha", fard: 4, witr: 3 }
-        ];
-
-        let totalRakat = 0;
-        let totalFarz = 0;
-        let totalWitr = 0;
-        let csvData = "Prayer,Missed Days,Fard,Witr,Total Rakat\n";
-
-        let tableHTML = `
-          <table>
-            <tr>
-              <th>Prayer</th>
-              <th>Missed Days</th>
-              <th>Fard</th>
-              <th>Witr</th>
-              <th>Total Rakat</th>
-            </tr>`;
-
-        salah.forEach(prayer => {
-          const fardTotal = prayer.fard * totalDays;
-          const witrTotal = prayer.witr * totalDays;
-          const totalPrayerRakat = fardTotal + witrTotal;
-          totalRakat += totalPrayerRakat;
-          totalFarz += fardTotal;
-          totalWitr += witrTotal;
-
-          csvData += `${prayer.name},${totalDays},${fardTotal},${witrTotal},${totalPrayerRakat}\n`;
-
-          tableHTML += `
-            <tr>
-              <td>${prayer.name}</td>
-              <td>${totalDays}</td>
-              <td>${fardTotal}</td>
-              <td>${witrTotal}</td>
-              <td>${totalPrayerRakat}</td>
-            </tr>`;
-        });
-
-        csvData += `\nTotal,${totalDays},${totalFarz},${totalWitr},${totalRakat}`;
+      salah.forEach((prayer, index) => {
+        const fardTotal = prayer.fard * totalDays;
+        const witrTotal = prayer.witr * totalDays;
+        const total = fardTotal + witrTotal;
+        totalRakat += total;
 
         tableHTML += `
           <tr>
-            <td><strong>Total</strong></td>
-            <td><strong>${totalNamaz}</strong></td>
-            <td><strong>${totalFarz}</strong></td>
-            <td><strong>${totalWitr}</strong></td>
-            <td><strong>${totalRakat.toLocaleString()}</strong></td>
-          </tr>
-          </table>`;
-
-        resultDiv.innerHTML = `
-          <p><strong>Total Missed Days:</strong> ${totalDays} days</p>
-          ${tableHTML}
-          <button onclick="downloadCSV()" style="margin-top:10px;">📥 Download CSV</button>
-          <p><small>* Only Fard and Witr are included. Sunnah are optional in Qaza.</small></p>
-        `;
-
-        window.qazaCSV = csvData;
+            <td>${langData.prayers[index]}</td>
+            <td>${totalDays}</td>
+            <td>${fardTotal}</td>
+            <td>${witrTotal}</td>
+            <td>${total}</td>
+          </tr>`;
+        
+        csvData += `${langData.prayers[index]},${totalDays},${fardTotal},${witrTotal},${total}\n`;
       });
-    };
 
-    window.downloadCSV = function () {
-      const blob = new Blob([window.qazaCSV], { type: "text/csv" });
+      tableHTML += `
+        <tr>
+          <td colspan="4"><strong>${langData.columns[4]}</strong></td>
+          <td><strong>${totalRakat}</strong></td>
+        </tr>
+      </table>`;
+
+      resultDiv.innerHTML = `
+        <p><strong>${langData.totalMissed}</strong> ${totalDays}</p>
+        ${tableHTML}
+        <button onclick="downloadCSV()" style="margin-top:15px;">${langData.downloadCSV}</button>
+        <p class="note">${langData.noteSunnah}</p>
+      `;
+
+      window.qazaCSV = csvData;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('languageSelector').addEventListener('change', () => {
+        currentLang = document.getElementById('languageSelector').value;
+        currentScript = 'native';
+        updateTranslations();
+      });
+      
+      document.getElementById('scriptToggle').addEventListener('click', () => {
+        currentScript = currentScript === 'native' ? 'roman' : 'native';
+        updateTranslations();
+      });
+
+      document.getElementById('calculateBtn').addEventListener('click', calculateQaza);
+      
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      updateTranslations();
+    });
+
+    function downloadCSV() {
+      const blob = new Blob([window.qazaCSV], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
+      const a = document.createElement('a');
       a.href = url;
-      a.download = "qaza_report.csv";
+      a.download = 'qaza_report.csv';
       a.click();
       URL.revokeObjectURL(url);
-    };
+    }
   </script>
 </body>
 </html>
