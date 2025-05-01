@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Qaza-e-Umri Calculator</title>
+  <title>🌙 Qaza Calculator</title>
   <style>
     :root {
       --bg-color: #ffffff;
@@ -44,16 +44,16 @@
       text-align: center;
       box-sizing: border-box;
       position: relative;
-      transition: background 0.3s;
+      margin-top: 100px;
     }
 
     .language-controls {
-      position: absolute;
+      position: fixed;
       top: 15px;
       left: 15px;
       display: flex;
       gap: 10px;
-      z-index: 2;
+      z-index: 3;
     }
 
     #languageSelector, #scriptToggle {
@@ -66,7 +66,7 @@
     }
 
     .theme-toggle {
-      position: absolute;
+      position: fixed;
       top: 15px;
       right: 15px;
       width: 40px;
@@ -77,6 +77,7 @@
       box-sizing: border-box;
       cursor: pointer;
       transition: background-color 0.3s;
+      z-index: 3;
     }
 
     .theme-toggle::before {
@@ -105,6 +106,12 @@
       text-align: right !important;
     }
 
+    .rtl input, .rtl label {
+      text-align: right;
+      display: block;
+      width: 100%;
+    }
+
     input, button {
       width: 100%;
       padding: 12px;
@@ -123,17 +130,23 @@
       border: none;
       cursor: pointer;
       font-weight: bold;
+      margin-top: 20px;
     }
 
     table {
       width: 100%;
       margin-top: 20px;
       border-collapse: collapse;
+      direction: ltr;
+    }
+
+    .rtl table {
+      direction: rtl;
     }
 
     th, td {
       border: 1px solid var(--border-color);
-      padding: 10px;
+      padding: 12px;
       font-size: 14px;
     }
 
@@ -168,8 +181,26 @@
       background: rgba(142,197,252,0.1);
     }
 
-    .emoji {
-      font-style: normal;
+    @media (max-width: 480px) {
+      .theme-toggle {
+        top: 15px;
+        right: 15px;
+      }
+      
+      .language-controls {
+        top: 60px;
+        left: 15px;
+      }
+      
+      .container {
+        margin-top: 120px;
+        padding: 20px;
+      }
+
+      th, td {
+        padding: 8px;
+        font-size: 13px;
+      }
     }
   </style>
 </head>
