@@ -22,7 +22,7 @@
       border-radius: 15px;
       box-shadow: 0px 10px 25px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 600px;
+      max-width: 700px;
       text-align: center;
       box-sizing: border-box;
     }
@@ -66,12 +66,14 @@
       width: 100%;
       margin-top: 20px;
       border-collapse: collapse;
+      overflow-x: auto;
     }
 
     th, td {
       border: 1px solid #ddd;
       padding: 10px;
       font-size: 14px;
+      text-align: center;
     }
 
     th {
@@ -81,7 +83,6 @@
     #result {
       margin-top: 30px;
       text-align: left;
-      overflow-x: auto;
     }
 
     @media (max-width: 480px) {
@@ -132,16 +133,21 @@
 
         const timeDiff = regularDate - pubertyDate;
         const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const totalNamaz = totalDays * 5;
 
         const salah = [
           { name: "Fajr", fard: 2, witr: 0 },
           { name: "Zuhr", fard: 4, witr: 0 },
-          { name: "Asr", fard: 4, witr: 0 },
+          { name: "Asr",  fard: 4, witr: 0 },
           { name: "Maghrib", fard: 3, witr: 0 },
           { name: "Isha", fard: 4, witr: 3 }
         ];
 
         let totalRakat = 0;
+        let totalFard = 0;
+        let totalWitr = 0;
+        let csvData = "Prayer,Missed Days,Fard,Witr,Total Rakat\n";
+
         let tableHTML = `
           <table>
             <tr>
@@ -150,13 +156,20 @@
               <th>Fard</th>
               <th>Witr</th>
               <th>Total Rakat</th>
+              <th>Completed</th>
             </tr>`;
 
-        salah.forEach(prayer => {
+        salah.forEach((prayer, index) => {
           const fardTotal = prayer.fard * totalDays;
           const witrTotal = prayer.witr * totalDays;
           const totalPrayerRakat = fardTotal + witrTotal;
           totalRakat += totalPrayerRakat;
+          totalFard += fardTotal;
+          totalWitr += witrTotal;
+
+          csvData += `${prayer.name},${totalDays},${fardTotal},${witrTotal},${totalPrayerRakat}\n`;
+
+          const checked = localStorage.getItem(`prayer_${index}`) === "true" ? "checked" : "";
 
           tableHTML += `
             <tr>
@@ -165,22 +178,45 @@
               <td>${fardTotal}</td>
               <td>${witrTotal}</td>
               <td>${totalPrayerRakat}</td>
+              <td><input type="checkbox" id="check_${index}" ${checked} onchange="localStorage.setItem('prayer_${index}', this.checked)"></td>
             </tr>`;
         });
 
+        // Summary rows
         tableHTML += `
-          <tr>
-            <th colspan="4">Grand Total</th>
-            <th>${totalRakat.toLocaleString()}</th>
+          <tr style="background-color:#f9f9f9;">
+            <th colspan="2">Summary</th>
+            <td><strong>${totalFard}</strong></td>
+            <td><strong>${totalWitr}</strong></td>
+            <td><strong>${totalRakat}</strong></td>
+            <td></td>
           </tr>
-          </table>`;
+          <tr style="background-color:#f3f3f3;">
+            <td colspan="6"><strong>Total Days Missed:</strong> ${totalDays} | <strong>Total Namaz:</strong> ${totalNamaz}</td>
+          </tr>
+        </table>`;
 
         resultDiv.innerHTML = `
-          <p><strong>Total Missed Days:</strong> ${totalDays} days</p>
+          <p><strong>Total Missed Days:</strong> ${totalDays}</p>
+          <p><strong>Total Missed Prayers:</strong> ${totalNamaz.toLocaleString()} namaz</p>
           ${tableHTML}
+          <button onclick="downloadCSV()">Download CSV</button>
           <p><small>* Only Fard and Witr are included. Sunnah are optional in Qaza.</small></p>
         `;
+
+        window.qazaCSV = csvData;
       });
+
+      // Download CSV logic
+      window.downloadCSV = function () {
+        const blob = new Blob([window.qazaCSV], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "qaza_report.csv";
+        a.click();
+        URL.revokeObjectURL(url);
+      };
     };
   </script>
 </body>
