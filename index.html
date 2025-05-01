@@ -286,47 +286,35 @@
         let missedNamaz = 0;
 
         salah.forEach(item => {
-          totalFard += item.fard * totalDays / 365.25;
-          totalWitr += item.witr * totalDays / 365.25;
+          totalFard += item.fard * (totalDays / 365.25);
+          totalWitr += item.witr * (totalDays / 365.25);
         });
 
-        missedNamaz = Math.floor(totalFard + totalWitr);
+        missedNamaz = totalDays * 5;
 
-        const table = `
+        let html = `
+          <h3>${languageData[currentLanguage].summary}</h3>
+          <p>${languageData[currentLanguage].ageAtPuberty} <strong>${ageAtPuberty}</strong></p>
+          <p>${languageData[currentLanguage].totalMissedDays} <strong>${totalDays}</strong></p>
+          <p>${languageData[currentLanguage].totalMissedNamaz} <strong>${missedNamaz}</strong></p>
           <table>
-            <thead>
-              <tr>
-                <th>Salah</th>
-                <th>Fard</th>
-                <th>Witr</th>
-                <th>Total Missed Namaz</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${salah.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${item.fard}</td>
-                  <td>${item.witr}</td>
-                  <td>${missedNamaz}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
-        `;
+            <tr><th>Prayer</th><th>Fard Rakat</th><th>Witr</th><th>Total Missed</th></tr>`;
 
-        resultDiv.innerHTML = `
-          <p><strong>${languageData[currentLanguage].ageAtPuberty}</strong> ${ageAtPuberty} years old.</p>
-          <p><strong>${languageData[currentLanguage].totalMissedDays}</strong> ${totalDays} days.</p>
-          <p><strong>${languageData[currentLanguage].totalMissedNamaz}</strong> ${missedNamaz} Rakats missed.</p>
-          ${table}
-          <button onclick="generatePDF()">${languageData[currentLanguage].downloadPdf}</button>
-        `;
+        salah.forEach(prayer => {
+          const missedFard = prayer.fard * totalDays;
+          const missedWitr = prayer.witr * totalDays;
+          html += `<tr><td>${prayer.name}</td><td>${missedFard}</td><td>${missedWitr}</td><td>${missedFard + missedWitr}</td></tr>`;
+        });
+
+        html += `<tr><th>Total</th><th>${totalFard.toFixed(0)}</th><th>${totalWitr.toFixed(0)}</th><th>${(totalFard + totalWitr).toFixed(0)}</th></tr>`;
+        html += `</table><br><button onclick="downloadPDF()">Download PDF</button>`;
+
+        resultDiv.innerHTML = html;
       });
     };
 
-    function generatePDF() {
-      const element = document.querySelector('.container');
+    function downloadPDF() {
+      const element = document.getElementById("result");
       const options = {
         filename: 'qaza-e-umri.pdf',
         image: { type: 'jpeg', quality: 0.98 },
