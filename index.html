@@ -15,6 +15,7 @@
       margin: 0;
       padding: 20px;
     }
+
     .container {
       background: white;
       padding: 30px;
@@ -23,12 +24,22 @@
       width: 100%;
       max-width: 600px;
       text-align: center;
+      box-sizing: border-box;
     }
+
     h1 {
       font-size: 24px;
       margin-bottom: 20px;
       color: #333;
     }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      text-align: left;
+      font-weight: 600;
+    }
+
     input, button {
       width: 100%;
       padding: 12px;
@@ -36,7 +47,9 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
+      box-sizing: border-box;
     }
+
     button {
       background: linear-gradient(to right, #2575fc, #6a11cb);
       color: white;
@@ -44,24 +57,51 @@
       cursor: pointer;
       font-weight: bold;
     }
+
     button:hover {
       background: linear-gradient(to right, #6a11cb, #2575fc);
     }
+
     table {
       width: 100%;
       margin-top: 20px;
       border-collapse: collapse;
     }
+
     th, td {
       border: 1px solid #ddd;
       padding: 10px;
+      font-size: 14px;
     }
+
     th {
       background-color: #f3f3f3;
     }
+
     #result {
       margin-top: 30px;
       text-align: left;
+      overflow-x: auto;
+    }
+
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 20px;
+      }
+
+      input, button {
+        font-size: 14px;
+        padding: 10px;
+      }
+
+      th, td {
+        font-size: 12px;
+        padding: 8px;
+      }
+
+      .container {
+        padding: 20px;
+      }
     }
   </style>
 </head>
@@ -114,32 +154,4 @@
       salah.forEach(prayer => {
         const fardTotal = prayer.fard * totalDays;
         const witrTotal = prayer.witr * totalDays;
-        const totalPrayerRakat = fardTotal + witrTotal;
-        totalRakat += totalPrayerRakat;
-
-        tableHTML += `
-          <tr>
-            <td>${prayer.name}</td>
-            <td>${totalDays}</td>
-            <td>${fardTotal}</td>
-            <td>${witrTotal}</td>
-            <td>${totalPrayerRakat}</td>
-          </tr>`;
-      });
-
-      tableHTML += `
-        <tr>
-          <th colspan="4">Grand Total</th>
-          <th>${totalRakat.toLocaleString()}</th>
-        </tr>
-        </table>`;
-
-      resultDiv.innerHTML = `
-        <p><strong>Total Missed Days:</strong> ${totalDays} days</p>
-        ${tableHTML}
-        <p><small>* Only Fard and Witr are included. Sunnah are optional in Qaza.</small></p>
-      `;
-    }
-  </script>
-</body>
-</html>
+        const totalPrayerRakat = fardTotal +
