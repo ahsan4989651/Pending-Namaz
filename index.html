@@ -29,6 +29,7 @@
       margin: 0;
       padding: 20px;
       box-sizing: border-box;
+      position: relative;
     }
     .container {
       background: var(--bg-color);
@@ -85,10 +86,9 @@
     th {
       background-color: var(--table-header-bg);
     }
-    #darkModeToggle {
+    #darkModeToggle, #languageSelector {
       position: fixed;
       top: 10px;
-      right: 10px;
       background: var(--button-bg);
       color: white;
       border: none;
@@ -97,17 +97,11 @@
       cursor: pointer;
       font-size: 14px;
     }
+    #darkModeToggle {
+      right: 10px;
+    }
     #languageSelector {
-      position: fixed;
-      top: 10px;
       left: 10px;
-      background: var(--button-bg);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 20px;
-      cursor: pointer;
-      font-size: 14px;
     }
     @media (max-width: 480px) {
       h1 {
