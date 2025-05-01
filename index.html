@@ -274,14 +274,23 @@
         const totalNamaz = totalDays * 5;
 
         const salah = [
-          { name: "Fajr", fard: 2, witr: 0 },
+          { name: "Fajr", fard: 2, witr: 1 },
           { name: "Zuhr", fard: 4, witr: 0 },
           { name: "Asr", fard: 4, witr: 0 },
           { name: "Maghrib", fard: 3, witr: 0 },
           { name: "Isha", fard: 4, witr: 1 }
         ];
-        
-        let missedNamaz = totalNamaz;
+
+        let totalFard = 0;
+        let totalWitr = 0;
+        let missedNamaz = 0;
+
+        salah.forEach(item => {
+          totalFard += item.fard * totalDays / 365.25;
+          totalWitr += item.witr * totalDays / 365.25;
+        });
+
+        missedNamaz = Math.floor(totalFard + totalWitr);
 
         const table = `
           <table>
@@ -318,7 +327,13 @@
 
     function generatePDF() {
       const element = document.querySelector('.container');
-      html2pdf().from(element).save('Qaza-e-Umri-Report.pdf');
+      const options = {
+        filename: 'qaza-e-umri.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 4 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().from(element).set(options).save();
     }
   </script>
 </body>
