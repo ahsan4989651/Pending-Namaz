@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Qaza-e-Umri Calculator (by Date)</title>
+  <title>Qaza-e-Umri Calculator</title>
   <style>
     body {
       font-family: 'Poppins', sans-serif;
@@ -68,10 +68,9 @@
 <body>
   <div class="container">
     <h1>Qaza-e-Umri Calculator</h1>
-    <label for="pubertyDate">Date you reached puberty:</label>
-    <input type="date" id="pubertyDate" />
-    <label for="regularDate">Date you started praying regularly:</label>
-    <input type="date" id="regularDate" />
+    <input type="number" id="pubertyAge" placeholder="Age at Puberty" />
+    <input type="number" id="currentAge" placeholder="Current Age" />
+    <input type="number" id="yearsRegular" placeholder="Years Prayed Regularly" />
     <button onclick="calculateQaza()">Calculate Qaza</button>
 
     <div id="result"></div>
@@ -79,25 +78,32 @@
 
   <script>
     function calculateQaza() {
-      const pubertyDate = new Date(document.getElementById('pubertyDate').value);
-      const regularDate = new Date(document.getElementById('regularDate').value);
+      const pubertyAge = parseInt(document.getElementById('pubertyAge').value);
+      const currentAge = parseInt(document.getElementById('currentAge').value);
+      const yearsRegular = parseInt(document.getElementById('yearsRegular').value);
       const resultDiv = document.getElementById('result');
       resultDiv.innerHTML = "";
 
-      if (isNaN(pubertyDate) || isNaN(regularDate) || regularDate <= pubertyDate) {
-        resultDiv.innerHTML = "<p>Please enter valid dates.</p>";
+      if (isNaN(pubertyAge) || isNaN(currentAge) || isNaN(yearsRegular) || pubertyAge >= currentAge) {
+        resultDiv.innerHTML = "<p>Please enter valid inputs.</p>";
         return;
       }
 
-      const timeDiff = regularDate - pubertyDate;
-      const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+      const missedYears = currentAge - pubertyAge - yearsRegular;
+      if (missedYears <= 0) {
+        resultDiv.innerHTML = "<p>No missed prayers! MashaAllah.</p>";
+        return;
+      }
+
+      const leapDays = Math.floor(missedYears / 4);
+      const totalDays = (missedYears * 365) + leapDays;
 
       const salah = [
-        { name: "Fajr", fard: 2, witr: 0 },
-        { name: "Zuhr", fard: 4, witr: 0 },
-        { name: "Asr",  fard: 4, witr: 0 },
+        { name: "Fajr",    fard: 2, witr: 0 },
+        { name: "Zuhr",    fard: 4, witr: 0 },
+        { name: "Asr",     fard: 4, witr: 0 },
         { name: "Maghrib", fard: 3, witr: 0 },
-        { name: "Isha", fard: 4, witr: 3 }
+        { name: "Isha",    fard: 4, witr: 3 }
       ];
 
       let totalRakat = 0;
@@ -135,9 +141,9 @@
         </table>`;
 
       resultDiv.innerHTML = `
-        <p><strong>Total Missed Days:</strong> ${totalDays} days</p>
+        <p><strong>Missed Years:</strong> ${missedYears} years (${totalDays} days including leap years)</p>
         ${tableHTML}
-        <p><small>* Only Fard and Witr are included. Sunnah are optional in Qaza.</small></p>
+        <p><small>* Only Fard and Witr are counted in Qaza-e-Umri. Sunnah are not obligatory to make up.</small></p>
       `;
     }
   </script>
