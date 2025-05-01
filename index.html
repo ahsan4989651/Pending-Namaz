@@ -89,7 +89,6 @@
       width: 100%;
       margin: 20px 0;
       border-collapse: collapse;
-      overflow-x: auto;
     }
     th, td {
       border: 1px solid #ddd;
@@ -176,12 +175,30 @@
         ageAtPuberty: "Age at Puberty",
         summary: "Summary",
         downloadPdf: "Download PDF",
-        errorInvalidDates: "Please enter valid dates in the correct order.",
+        errorInvalidDates: "Please enter valid dates.",
         errorFutureDate: "Dates cannot be in the future.",
         errorPubertyBeforeBirth: "Puberty date must be after birth date.",
         errorRegularBeforePuberty: "Regular prayer date must be after puberty date."
       },
-      // ... (other language translations remain the same, add new keys as needed)
+      hi: {
+        title: "क़ज़ा-ए-उमरी कैलकुलेटर",
+        birthLabel: "आपकी जन्मतिथि:",
+        pubertyLabel: "आपने प्यूबर्टी कब प्राप्त की:",
+        regularLabel: "नियमित नमाज़ शुरू करने की तिथि:",
+        calculateBtn: "क़ज़ा की गणना करें",
+        totalMissedDays: "कुल छूटे दिन",
+        totalNamaz: "कुल नमाज़",
+        totalFard: "कुल फ़र्ज़ रकात",
+        totalWitr: "कुल वित्र रकात",
+        ageAtPuberty: "प्यूबर्टी की आयु",
+        summary: "सारांश",
+        downloadPdf: "पीडीएफ डाउनलोड करें",
+        errorInvalidDates: "कृपया वैध तिथियाँ दर्ज करें।",
+        errorFutureDate: "तिथियाँ भविष्य की नहीं हो सकतीं।",
+        errorPubertyBeforeBirth: "प्यूबर्टी की तिथि जन्म तिथि के बाद होनी चाहिए।",
+        errorRegularBeforePuberty: "नियमित नमाज़ की तिथि प्यूबर्टी के बाद होनी चाहिए।"
+      },
+      // Add other languages as needed
     };
 
     let currentLanguage = localStorage.getItem('language') || 'en';
@@ -194,60 +211,67 @@
     });
 
     function updateLanguage(lang) {
-      document.getElementById('title').textContent = languageData[lang].title;
-      document.getElementById('birthLabel').textContent = languageData[lang].birthLabel;
-      document.getElementById('pubertyLabel').textContent = languageData[lang].pubertyLabel;
-      document.getElementById('regularLabel').textContent = languageData[lang].regularLabel;
-      document.getElementById('calculateBtn').textContent = languageData[lang].calculateBtn;
+      console.log('Updating language to:', lang);
+      const data = languageData[lang] || languageData.en;
+      document.getElementById('title').textContent = data.title;
+      document.getElementById('birthLabel').textContent = data.birthLabel;
+      document.getElementById('pubertyLabel').textContent = data.pubertyLabel;
+      document.getElementById('regularLabel').textContent = data.regularLabel;
+      document.getElementById('calculateBtn').textContent = data.calculateBtn;
     }
 
-    const toggle = document.getElementById('darkModeToggle');
-    toggle.addEventListener('click', () => {
+    document.getElementById('darkModeToggle').addEventListener('click', () => {
       document.documentElement.toggleAttribute('data-theme', 'dark');
-      toggle.textContent = document.documentElement.hasAttribute('data-theme') ? '☀️ Light Mode' : '🌙 Dark Mode';
+      document.getElementById('darkModeToggle').textContent = 
+        document.documentElement.hasAttribute('data-theme') ? '☀️ Light Mode' : '🌙 Dark Mode';
     });
 
     document.getElementById('calculateBtn').addEventListener('click', calculateQaza);
 
     function calculateQaza() {
+      console.log('Calculating Qaza...');
       const birthDate = new Date(document.getElementById('birthDate').value);
       const pubertyDate = new Date(document.getElementById('pubertyDate').value);
       const regularDate = new Date(document.getElementById('regularDate').value);
       const resultDiv = document.getElementById('result');
       const today = new Date();
 
-      // Reset error messages
+      // Reset errors
       document.getElementById('birthError').textContent = '';
       document.getElementById('pubertyError').textContent = '';
       document.getElementById('regularError').textContent = '';
       resultDiv.innerHTML = '';
 
-      // Input validation
-      if (isNaN(birthDate) || isNaN(pubertyDate) || isNaN(regularDate)) {
+      // Validation
+      if (!birthDate.getTime() || !pubertyDate.getTime() || !regularDate.getTime()) {
         resultDiv.innerHTML = `<p class="error">${languageData[currentLanguage].errorInvalidDates}</p>`;
+        console.error('Invalid date input');
         return;
       }
 
       if (birthDate > today || pubertyDate > today || regularDate > today) {
         resultDiv.innerHTML = `<p class="error">${languageData[currentLanguage].errorFutureDate}</p>`;
+        console.error('Future date detected');
         return;
       }
 
       if (pubertyDate <= birthDate) {
         document.getElementById('pubertyError').textContent = languageData[currentLanguage].errorPubertyBeforeBirth;
+        console.error('Puberty date before birth');
         return;
       }
 
       if (regularDate <= pubertyDate) {
         document.getElementById('regularError').textContent = languageData[currentLanguage].errorRegularBeforePuberty;
+        console.error('Regular date before puberty');
         return;
       }
 
-      // Calculate time differences
+      // Calculations
+      console.log('Dates valid, calculating...');
       const ageAtPuberty = Math.floor((pubertyDate - birthDate) / (1000 * 60 * 60 * 24 * 365.25));
       const totalDays = Math.floor((regularDate - pubertyDate) / (1000 * 60 * 60 * 24));
 
-      // Prayer definitions
       const salah = [
         { name: "Fajr", fard: 2, witr: 0 },
         { name: "Zuhr", fard: 4, witr: 0 },
@@ -256,7 +280,6 @@
         { name: "Isha", fard: 4, witr: 3 }
       ];
 
-      // Calculate totals
       let totalFard = 0;
       let totalWitr = 0;
       const totalNamaz = totalDays * 5;
@@ -274,7 +297,9 @@
         };
       });
 
-      // Generate result HTML
+      console.log('Prayer breakdown:', prayerBreakdown);
+
+      // Generate HTML
       let html = `
         <h3>${languageData[currentLanguage].summary}</h3>
         <p>${languageData[currentLanguage].ageAtPuberty}: <strong>${ageAtPuberty}</strong></p>
@@ -315,17 +340,27 @@
         <button onclick="downloadPDF()">${languageData[currentLanguage].downloadPdf}</button>`;
 
       resultDiv.innerHTML = html;
+      console.log('Result displayed');
     }
 
     function downloadPDF() {
+      console.log('Generating PDF...');
       const element = document.getElementById("result");
+      if (!element.innerHTML) {
+        console.error('No result content to generate PDF');
+        return;
+      }
       const options = {
         filename: 'qaza-e-umri.pdf',
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 4 },
+        html2canvas: { scale: 2 },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
       };
-      html2pdf().from(element).set(options).save();
+      html2pdf().from(element).set(options).save().then(() => {
+        console.log('PDF generated successfully');
+      }).catch(err => {
+        console.error('PDF generation failed:', err);
+      });
     }
   </script>
 </body>
