@@ -283,10 +283,34 @@
         
         let missedNamaz = totalNamaz;
 
+        const table = `
+          <table>
+            <thead>
+              <tr>
+                <th>Salah</th>
+                <th>Fard</th>
+                <th>Witr</th>
+                <th>Total Missed Namaz</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${salah.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.fard}</td>
+                  <td>${item.witr}</td>
+                  <td>${missedNamaz}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        `;
+
         resultDiv.innerHTML = `
           <p><strong>${languageData[currentLanguage].ageAtPuberty}</strong> ${ageAtPuberty} years old.</p>
           <p><strong>${languageData[currentLanguage].totalMissedDays}</strong> ${totalDays} days.</p>
           <p><strong>${languageData[currentLanguage].totalMissedNamaz}</strong> ${missedNamaz} Rakats missed.</p>
+          ${table}
           <button onclick="generatePDF()">${languageData[currentLanguage].downloadPdf}</button>
         `;
       });
