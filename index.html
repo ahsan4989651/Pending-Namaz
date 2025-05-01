@@ -112,46 +112,76 @@
     <input type="date" id="pubertyDate" />
     <label for="regularDate">Date you started praying regularly:</label>
     <input type="date" id="regularDate" />
-    <button onclick="calculateQaza()">Calculate Qaza</button>
+    <button id="calculateBtn">Calculate Qaza</button>
 
     <div id="result"></div>
   </div>
 
   <script>
-    function calculateQaza() {
-      const pubertyDate = new Date(document.getElementById('pubertyDate').value);
-      const regularDate = new Date(document.getElementById('regularDate').value);
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = "";
+    window.onload = function () {
+      document.getElementById('calculateBtn').addEventListener('click', function () {
+        const pubertyDate = new Date(document.getElementById('pubertyDate').value);
+        const regularDate = new Date(document.getElementById('regularDate').value);
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = "";
 
-      if (isNaN(pubertyDate) || isNaN(regularDate) || regularDate <= pubertyDate) {
-        resultDiv.innerHTML = "<p>Please enter valid dates.</p>";
-        return;
-      }
+        if (isNaN(pubertyDate) || isNaN(regularDate) || regularDate <= pubertyDate) {
+          resultDiv.innerHTML = "<p>Please enter valid dates.</p>";
+          return;
+        }
 
-      const timeDiff = regularDate - pubertyDate;
-      const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        const timeDiff = regularDate - pubertyDate;
+        const totalDays = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
 
-      const salah = [
-        { name: "Fajr", fard: 2, witr: 0 },
-        { name: "Zuhr", fard: 4, witr: 0 },
-        { name: "Asr",  fard: 4, witr: 0 },
-        { name: "Maghrib", fard: 3, witr: 0 },
-        { name: "Isha", fard: 4, witr: 3 }
-      ];
+        const salah = [
+          { name: "Fajr", fard: 2, witr: 0 },
+          { name: "Zuhr", fard: 4, witr: 0 },
+          { name: "Asr", fard: 4, witr: 0 },
+          { name: "Maghrib", fard: 3, witr: 0 },
+          { name: "Isha", fard: 4, witr: 3 }
+        ];
 
-      let totalRakat = 0;
-      let tableHTML = `
-        <table>
+        let totalRakat = 0;
+        let tableHTML = `
+          <table>
+            <tr>
+              <th>Prayer</th>
+              <th>Missed Days</th>
+              <th>Fard</th>
+              <th>Witr</th>
+              <th>Total Rakat</th>
+            </tr>`;
+
+        salah.forEach(prayer => {
+          const fardTotal = prayer.fard * totalDays;
+          const witrTotal = prayer.witr * totalDays;
+          const totalPrayerRakat = fardTotal + witrTotal;
+          totalRakat += totalPrayerRakat;
+
+          tableHTML += `
+            <tr>
+              <td>${prayer.name}</td>
+              <td>${totalDays}</td>
+              <td>${fardTotal}</td>
+              <td>${witrTotal}</td>
+              <td>${totalPrayerRakat}</td>
+            </tr>`;
+        });
+
+        tableHTML += `
           <tr>
-            <th>Prayer</th>
-            <th>Missed Days</th>
-            <th>Fard</th>
-            <th>Witr</th>
-            <th>Total Rakat</th>
-          </tr>`;
+            <th colspan="4">Grand Total</th>
+            <th>${totalRakat.toLocaleString()}</th>
+          </tr>
+          </table>`;
 
-      salah.forEach(prayer => {
-        const fardTotal = prayer.fard * totalDays;
-        const witrTotal = prayer.witr * totalDays;
-        const totalPrayerRakat = fardTotal +
+        resultDiv.innerHTML = `
+          <p><strong>Total Missed Days:</strong> ${totalDays} days</p>
+          ${tableHTML}
+          <p><small>* Only Fard and Witr are included. Sunnah are optional in Qaza.</small></p>
+        `;
+      });
+    };
+  </script>
+</body>
+</html>
